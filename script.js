@@ -5,8 +5,11 @@
     const posiciones = ['abajo', 'izquierda', 'arriba', 'derecha'];
     let filaActual = null;
     let numFichasEnFila = 0;
-    const MAX_FICHAS_POR_FILA = 8;
+    const MAX_FICHAS_POR_FILA = 10;
     let direccionActual = 'derecha'; // Nueva variable para controlar la dirección
+    let turnosConsecutivosPasados = 0; // Lleva el conteo de turnos donde todos pasan.
+let jugadoresQueHanPasado = new Set(); // Lleva registro de jugadores que han pasado.
+
 
     function crearFichas() {
       todasLasFichas = [];
@@ -127,46 +130,56 @@
     }
 
     function colocarFicha(ficha, lado) {
-        // Asegurar que siempre se usa un único contenedor de fichas
-        if (!filaActual) {
-            filaActual = document.createElement('div');
-            filaActual.className = 'fila-fichas';
-            const lineaFichas = document.getElementById('linea-fichas');
-            lineaFichas.appendChild(filaActual);
-        }
-    
+        // Obtén los contenedores
+        const lineaFichasPrincipal = document.getElementById('linea-fichas-principal');
+        const lineaFichasIzquierda = document.getElementById('linea-fichas-izquierda');
+        const lineaFichasDerecha = document.getElementById('linea-fichas-derecha');
+      
         const extremoIzquierdo = tableroFichas[0] ? tableroFichas[0].numero1 : null;
         const extremoDerecho = tableroFichas[tableroFichas.length - 1] ? tableroFichas[tableroFichas.length - 1].numero2 : null;
-    
+      
         const fichaDiv = crearFichaVisual(ficha);
-    
-        if (lado === 'izquierda') {
-            if (ficha.numero2 === extremoIzquierdo) {
-                fichaDiv.style.transform = 'rotate(270deg)';
-            } else if (ficha.numero1 === extremoIzquierdo) {
-                fichaDiv.style.transform = 'rotate(90deg)';
-                [ficha.numero1, ficha.numero2] = [ficha.numero2, ficha.numero1];
-            }
-            tableroFichas.unshift(ficha);
-            filaActual.insertBefore(fichaDiv, filaActual.firstChild);
-        } else if (lado === 'centro') {
-            fichaDiv.style.transform = 'rotate(0deg)';
-            tableroFichas.push(ficha);
-            filaActual.appendChild(fichaDiv);
+      
+        // Decide el contenedor donde se colocará la ficha
+        let contenedorDestino;
+      
+        if (lineaFichasPrincipal.childElementCount < MAX_FICHAS_POR_FILA) {
+          contenedorDestino = lineaFichasPrincipal; // Llenar el contenedor principal primero
+        } else if (lado === 'izquierda') {
+          contenedorDestino = lineaFichasIzquierda; // Llenar el contenedor izquierdo
         } else if (lado === 'derecha') {
-            if (ficha.numero1 === extremoDerecho) {
-                fichaDiv.style.transform = 'rotate(270deg)';
-            } else if (ficha.numero2 === extremoDerecho) {
-                fichaDiv.style.transform = 'rotate(90deg)';
-                [ficha.numero1, ficha.numero2] = [ficha.numero2, ficha.numero1];
-            }
-            tableroFichas.push(ficha);
-            filaActual.appendChild(fichaDiv);
+          contenedorDestino = lineaFichasDerecha; // Llenar el contenedor derecho
         }
-    
+      
+        // Coloca la ficha en el contenedor correspondiente
+        if (lado === 'izquierda') {
+          if (ficha.numero2 === extremoIzquierdo) {
+            fichaDiv.style.transform = 'rotate(270deg)';
+          } else if (ficha.numero1 === extremoIzquierdo) {
+            fichaDiv.style.transform = 'rotate(90deg)';
+            [ficha.numero1, ficha.numero2] = [ficha.numero2, ficha.numero1];
+          }
+          tableroFichas.unshift(ficha);
+          contenedorDestino.insertBefore(fichaDiv, contenedorDestino.firstChild);
+        } else if (lado === 'centro') {
+          fichaDiv.style.transform = 'rotate(0deg)';
+          tableroFichas.push(ficha);
+          contenedorDestino.appendChild(fichaDiv);
+        } else if (lado === 'derecha') {
+          if (ficha.numero1 === extremoDerecho) {
+            fichaDiv.style.transform = 'rotate(270deg)';
+          } else if (ficha.numero2 === extremoDerecho) {
+            fichaDiv.style.transform = 'rotate(90deg)';
+            [ficha.numero1, ficha.numero2] = [ficha.numero2, ficha.numero1];
+          }
+          tableroFichas.push(ficha);
+          contenedorDestino.appendChild(fichaDiv);
+        }
+      
         // Espaciado entre fichas
-        fichaDiv.style.margin = '18px';
-    }
+        fichaDiv.style.margin = '15px';
+      }
+      
       
 
     function ocultarJugadoresNoUsados(numJugadores) {
@@ -201,56 +214,75 @@
 
       return { ficha: mulaMayor, jugador: jugadorInicial };
     }
+    function determinarGanadorPorPuntos() {
+        const puntosPorJugador = jugadores.map((jugador) => {
+          return jugador.fichas.reduce((total, ficha) => total + ficha.numero1 + ficha.numero2, 0);
+        });
+      
+        const minPuntos = Math.min(...puntosPorJugador);
+        const ganador = puntosPorJugador.indexOf(minPuntos);
+      
+        alert(`¡El juego ha terminado! El Jugador ${ganador + 1} ha ganado con ${minPuntos} puntos.`);
+      }
 
     function jugarTurno() {
-      const jugadorActual = jugadores[turnoActual];
-      let fichaJugada = null;
-      let ladoColocacion = null;
-
-      for (let i = 0; i < jugadorActual.fichas.length; i++) {
-        const ficha = jugadorActual.fichas[i];
-        const extremoIzquierdo = tableroFichas[0] ? tableroFichas[0].numero1 : null;
-        const extremoDerecho = tableroFichas[tableroFichas.length - 1] ? tableroFichas[tableroFichas.length - 1].numero2 : null;
-
-        if (tableroFichas.length === 0) {
-          fichaJugada = ficha;
-          ladoColocacion = 'centro';
-          break;
-        } else if (ficha.numero1 === extremoIzquierdo || ficha.numero2 === extremoIzquierdo) {
-          fichaJugada = ficha;
-          ladoColocacion = 'izquierda';
-          break;
-        } else if (ficha.numero1 === extremoDerecho || ficha.numero2 === extremoDerecho) {
-          fichaJugada = ficha;
-          ladoColocacion = 'derecha';
-          break;
+        const jugadorActual = jugadores[turnoActual];
+        let fichaJugada = null;
+        let ladoColocacion = null;
+      
+        for (let i = 0; i < jugadorActual.fichas.length; i++) {
+          const ficha = jugadorActual.fichas[i];
+          const extremoIzquierdo = tableroFichas[0] ? tableroFichas[0].numero1 : null;
+          const extremoDerecho = tableroFichas[tableroFichas.length - 1] ? tableroFichas[tableroFichas.length - 1].numero2 : null;
+      
+          if (tableroFichas.length === 0) {
+            fichaJugada = ficha;
+            ladoColocacion = 'centro';
+            break;
+          } else if (ficha.numero1 === extremoIzquierdo || ficha.numero2 === extremoIzquierdo) {
+            fichaJugada = ficha;
+            ladoColocacion = 'izquierda';
+            break;
+          } else if (ficha.numero1 === extremoDerecho || ficha.numero2 === extremoDerecho) {
+            fichaJugada = ficha;
+            ladoColocacion = 'derecha';
+            break;
+          }
         }
-      }
-
-      if (fichaJugada) {
-        jugadorActual.fichas = jugadorActual.fichas.filter(f => f !== fichaJugada);
-        colocarFicha(fichaJugada, ladoColocacion);
-        registrarMovimiento(turnoActual, fichaJugada, ladoColocacion);
-        actualizarProbabilidades();
-
-        if (jugadorActual.fichas.length === 0) {
-          setTimeout(() => {
-            alert(`¡El Jugador ${turnoActual + 1} ha ganado!`);
-          }, 500);
-          return;
+      
+        if (fichaJugada) {
+          jugadorActual.fichas = jugadorActual.fichas.filter(f => f !== fichaJugada);
+          colocarFicha(fichaJugada, ladoColocacion);
+          registrarMovimiento(turnoActual, fichaJugada, ladoColocacion);
+          actualizarProbabilidades();
+      
+          jugadoresQueHanPasado.clear(); // Reiniciar el registro de jugadores que han pasado.
+          turnosConsecutivosPasados = 0; // Reiniciar el conteo de turnos consecutivos.
+      
+          if (jugadorActual.fichas.length === 0) {
+            setTimeout(() => {
+              alert(`¡El Jugador ${turnoActual + 1} ha ganado!`);
+            }, 500);
+            return;
+          }
+        } else {
+          jugadoresQueHanPasado.add(turnoActual); // Agregar jugador al registro de pases.
+      
+            turnosConsecutivosPasados++; // Incrementar el conteo de turnos donde todos pasan.
+          
+      
+          if (turnosConsecutivosPasados > 1) {
+            // Terminar el juego si todos pasan por segunda vez consecutiva.
+            determinarGanadorPorPuntos();
+            return;
+          }
         }
-
+      
         turnoActual = (turnoActual + 1) % jugadores.length;
         actualizarInterfaz();
-
-        setTimeout(jugarTurno, 1500);
-      } else {
-        turnoActual = (turnoActual + 1) % jugadores.length;
-        actualizarInterfaz();
         setTimeout(jugarTurno, 1500);
       }
-    }
-
+      
 
     function iniciarJuego() {
       const numJugadores = parseInt(document.getElementById('numJugadores').value);

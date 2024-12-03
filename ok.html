@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Juego de Dominó Multiplayer</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
   <h1>Juego de Dominó Multiplayer</h1>
   <div class="section active" id="info">
     <div class="container">
       <h2>Método Monte Carlo en el Dominó</h2>
-      <p>El Método de Monte Carlo es una técnica de simulación estadística que utiliza números aleatorios para resolver problemas complejos.</p>
+      <p>El Método de Monte Carlo es una técnica de simulación estadística que utiliza números aleatorios para resolver
+        problemas complejos.</p>
       <ul>
         <li><strong>Cálculo de probabilidades:</strong> P(E) = simulaciones favorables / total de simulaciones</li>
         <li><strong>Valor esperado:</strong> E[X] = promedio de simulaciones</li>
@@ -32,7 +35,7 @@
     </div>
   </div>
   <div id="probabilidades-container"></div>
-  
+
   <div id="juego" style="display: none;">
     <div class="layout-container">
       <div class="info-container">
@@ -45,7 +48,15 @@
         <div id="jugador-arriba" class="jugador arriba"></div>
         <div id="jugador-izquierda" class="jugador izquierda"></div>
         <div class="tablero" id="tablero" style="width: 1000px;">
-          <div class="linea-fichas" id="linea-fichas"></div>
+            <h3 class="titulo-linea-fichas">Fichas Principales</h3>
+            <div class="linea-fichas" id="linea-fichas-principal"></div>
+            
+            <h3 class="titulo-linea-fichas">Fichas Extremo Izquierdo</h3>
+            <div class="linea-fichas" id="linea-fichas-izquierda"></div>
+            
+            <h3 class="titulo-linea-fichas">Fichas Extremo Derecho</h3>
+            <div class="linea-fichas" id="linea-fichas-derecha"></div>
+          
         </div>
         <div id="jugador-derecha" class="jugador derecha"></div>
         <div id="jugador-abajo" class="jugador abajo"></div>
@@ -67,4 +78,5 @@
   </div>
   <script src="script.js"></script>
 </body>
+
 </html>

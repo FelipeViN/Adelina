@@ -96,16 +96,15 @@
   .tablero {
     grid-column: 2;
     grid-row: 2;
-    display: flex;
-    flex-direction: column; /* Asegura que los elementos dentro se apilen verticalmente */
-    align-items: center;
-    justify-content: center; /* Centra el contenido verticalmente */
-    width: 100%; /* Ocupa todo el ancho disponible */
-    height: 100%; /* Ocupa toda la altura disponible */
-    padding: 20px; /* Espaciado interno */
-    overflow: hidden; /* Evita desbordamientos */
+    background-color: #34495e;
+    border: 2px solid #ecf0f1;
     border-radius: 10px;
-    box-sizing: border-box;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 400px;
   }
 
 
@@ -120,20 +119,60 @@
 
   .linea-fichas {
     display: flex;
-    flex-direction: row; /* Mantiene las fichas en una sola fila */
+    flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Alinea las fichas desde el inicio */
-    gap: 18px; /* Espaciado entre las fichas */
-    padding: 10px; /* Espaciado interno */
-    overflow-x: auto; /* Habilita el scroll horizontal */
-    white-space: nowrap; /* Evita que las fichas bajen a otra fila */
-    width: 100%; /* Usa todo el ancho disponible del contenedor */
-    height: 100%; /* Asegura que ocupe toda la altura del contenedor padre */
-    border: 2px solid #ecf0f1; /* Borde visible */
-    background-color: #34495e; /* Fondo consistente */
-    border-radius: 10px; /* Bordes redondeados */
-    box-sizing: border-box; /* Incluye padding y borde en las dimensiones */
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 20px;
+    min-height: 200px;
+    width: 100%;
   }
+  #linea-fichas-principal {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%;
+    border: 2px solid #ecf0f1;
+    background-color: #34495e;
+    border-radius: 10px;
+  }
+  .titulo-linea-fichas {
+    font-size: 1.2rem;
+    text-align: center;
+    margin: 10px 0;
+    color: #ecf0f1;
+    font-weight: bold;
+  }
+  
+  #linea-fichas-izquierda,
+  #linea-fichas-derecha {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 18px;
+    padding: 10px;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: 100%; /* Cada uno ocupa el 45% del ancho del tablero */
+    border: 2px solid #ecf0f1;
+    background-color: #34495e;
+    border-radius: 10px;
+  }
+  
+  #linea-fichas-izquierda {
+    margin-right: 5px;
+  }
+  
+  #linea-fichas-derecha {
+    margin-left: 5px;
+  }
+  
 
   .fila-fichas {
     display: flex;
@@ -200,14 +239,12 @@
   background-color: #ecf0f1;
   border: 2px solid #333;
   border-radius: 5px;
-  margin: 0; /* Evitar margen adicional fuera del gap */
-  transform: rotate(0deg);
-  flex-shrink: 0; /* Previene que las fichas se reduzcan en tamaño */
+  margin: 5px;
+  transform: rotate(0deg); /* Por defecto, las fichas no rotan */
 }
 
 .ficha.mula {
   transform: rotate(0deg) !important; /* Las fichas mulas nunca rotan */
-  margin: 1px;
 }
 
 .ficha.rotada {
@@ -275,7 +312,7 @@
   }
 
   .historial {
-    max-height: 300px;
+    max-height: 900px;
     overflow-y: auto;
     background-color: #34495e;
     border: 2px solid #ecf0f1;
